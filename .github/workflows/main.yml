@@ -3,7 +3,7 @@ name: Java Build and Deploy (Self-Hosted)
 on:
   push:
     branches:
-      - master  # Trigger on push to the master branch
+      - master  # Trigger on push to the master branch main
   pull_request:
     branches:
       - master
