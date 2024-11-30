@@ -3,7 +3,7 @@ name: Java Build and Deploy (Self-Hosted)
 on:
   push:
     branches:
-      - master  # Trigger on push to the master branch main
+      - master  # Trigger on push to the master branch
   pull_request:
     branches:
       - master
@@ -24,22 +24,26 @@ jobs:
         java-version: '11'  # Specify your Java version (use the version you need)
         distribution: 'adoptopenjdk'  # You can also choose another distribution like 'zulu' or 'openjdk'
 
-    # Step 3: Set up Maven
-    - name: Set up Maven
+    # Step 3: Install Maven (if not already installed)
+    - name: Install Maven
       run: |
         if ! command -v mvn &> /dev/null; then
           echo "Maven not found, installing..."
           sudo apt-get update
-          sudo apt-get install -y maven  # Install Maven on the self-hosted runner
+          sudo apt-get install -y maven  # Install Maven
         else
           echo "Maven already installed."
         fi
 
-    # Step 4: Build the project using Maven
+    # Step 4: Verify Maven installation
+    - name: Verify Maven installation
+      run: mvn -v  # This should output Maven version info
+
+    # Step 5: Build the project using Maven
     - name: Build with Maven
       run: mvn clean package -DskipTests  # Use -DskipTests if you don't want to run tests during build (optional)
 
-    # Step 5: Deploy the JAR/WAR to Tomcat
+    # Step 6: Deploy the JAR/WAR to Tomcat
     - name: Deploy Application
       run: |
         WAR_FILE=$(find target -name "*.war" | head -n 1)  # Dynamically find the WAR file
