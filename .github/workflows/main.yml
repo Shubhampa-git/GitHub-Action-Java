@@ -17,24 +17,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Java and Maven (to ensure the environment is correctly prepared)
+    # Step 2: Set up Java (ensure it's installed and configured)
     - name: Set up Java 11 (or any version your project requires)
       uses: actions/setup-java@v3
       with:
         java-version: '11'  # Specify your Java version (use the version you need)
         distribution: 'adoptopenjdk'  # You can also choose another distribution like 'zulu' or 'openjdk'
 
+    # Step 3: Set up Maven
     - name: Set up Maven
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'  # Ensure Java version matches the Maven setup
-        maven-version: '3.8.1'  # Specify your Maven version
+      run: |
+        if ! command -v mvn &> /dev/null; then
+          echo "Maven not found, installing..."
+          sudo apt-get update
+          sudo apt-get install -y maven  # Install Maven on the self-hosted runner
+        else
+          echo "Maven already installed."
+        fi
 
-    # Step 3: Build the project using Maven
+    # Step 4: Build the project using Maven
     - name: Build with Maven
       run: mvn clean package -DskipTests  # Use -DskipTests if you don't want to run tests during build (optional)
 
-    # Step 4: Deploy the JAR/WAR to Tomcat
+    # Step 5: Deploy the JAR/WAR to Tomcat
     - name: Deploy Application
       run: |
         WAR_FILE=$(find target -name "*.war" | head -n 1)  # Dynamically find the WAR file
@@ -46,6 +51,3 @@ jobs:
         sudo cp "$WAR_FILE" /opt/tomcat/webapps/  # Copy the WAR file to Tomcat's webapps directory
         sudo /opt/tomcat/bin/shutdown.sh  # Shutdown Tomcat before restarting
         sudo /opt/tomcat/bin/startup.sh   # Restart Tomcat to deploy the WAR
-      env:
-        TOMCAT_USER: ${{ secrets.TOMCAT_USER }}  # Store sensitive credentials securely using GitHub secrets (optional)
-        TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}  # Optional secret for additional Tomcat security if needed
