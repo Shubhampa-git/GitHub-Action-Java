@@ -38,7 +38,7 @@ jobs:
           name: jar-file
           
       - name: Copy jar file
-        uses: ArthurYdalgo/github-action-scp@release
+        uses: ArthurYdalgo/github-action-scp@0.7.5
         with:
           local: "*.war"
           remote: /home/ubuntu
