@@ -36,8 +36,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jar-file
-          # path: /target
           
-      - name: listing files
-        run: ls -la
+      - name: Copy jar file
+        uses: ArthurYdalgo/github-action-scp@release
+        with:
+          local: "*.war"
+          remote: /home/ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey : ${{ secrets.PRIVATE_KEY }}
 
