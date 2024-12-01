@@ -27,4 +27,14 @@ jobs:
           name: jar-file
           path: target/*.war
 
-          
+  deploy:
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: listing files
+        run: ls -la
+
