@@ -36,11 +36,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jar-file
+     
+      - name: Copy war to target
+        run: |
+            mkdir -p target  
+            cp *.war target
           
       - name: Copy jar file
         uses: ArthurYdalgo/github-action-scp@0.7.5
         with:
-          local: "*.war"
+          local: target/*.war
           remote: /home/ubuntu
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.SSH_USER }}
